@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String?
+  role      Role      @default(CLIENT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  contacts  Contact[]
+  invoices  Invoice[]
+  Project   Project[]
+}
+
+model Project {
+  id                      String        @id @default(cuid())
+  title                   String
+  description             String
+  type                    ProjectType
+  status                  ProjectStatus @default(PENDING)
+  budget                  Int?
+  timeline                String?
+  preferredFeatures       String?
+  platform                String?
+  technologyStack         String?
+  mobilePlatform          String?
+  mobileFeatures          String?
+  appStoreRequirements    String?
+  websiteType             String?
+  responsiveDesign        Boolean?
+  cmsRequired             Boolean?
+  companyName             String?
+  companyMotto            String?
+  companyHistory          String?
+  domainName              String?
+  specialFeatures         String?
+  contentReady            Boolean?
+  websiteManagement       Boolean?
+  logoStatus              String?
+  clientName              String?
+  clientEmail             String?
+  clientPhone             String?
+  businessPhone           String?
+  address                 String?
+  startDate               DateTime?
+  endDate                 DateTime?
+  estimatedHours          Int?
+  actualHours             Int?
+  progress                Int?
+  milestones              String?
+  developmentEnvironment  String?
+  testingEnvironment      String?
+  deploymentEnvironment   String?
+  supportDuration         Int?
+  supportHours            String?
+  maintenancePeriod       Int?
+  dataProtection          Boolean?
+  accessibility           Boolean?
+  performanceRequirements String?
+  softwareType            String?
+  integrationRequirements String?
+  databaseRequirements    String?
+  softwareName            String?
+  licenseType             String?
+  deadline                DateTime?
+  priority                Int?
+  notes                   String?
+  clientId                String
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+  File                    File[]
+  invoices                Invoice[]
+  User                    User          @relation(fields: [clientId], references: [id])
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  amount    Int
+  dueDate   DateTime
+  status    String
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Contact {
+  id          String       @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  inquiryType InquiryType
+  budget      BudgetRange?
+  timeline    Timeline?
+  subject     String
+  message     String
+  attachments String[]
+  status      String       @default("PENDING")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userId      String?
+  user        User?        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model File {
+  id        String   @id
+  url       String
+  name      String
+  type      String
+  projectId String
+  createdAt DateTime @default(now())
+  Project   Project  @relation(fields: [projectId], references: [id])
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum ProjectType {
+  WEBSITE
+  MOBILE
+  CUSTOM_SOFTWARE
+  PURCHASE_SOFTWARE
+}
+
+enum ContactMethod {
+  EMAIL
+  PHONE
+  WHATSAPP
+}
+
+enum Timeline {
+  IMMEDIATE
+  ONE_TO_THREE_MONTHS
+  THREE_TO_SIX_MONTHS
+  SIX_MONTHS_PLUS
+}
+
+enum InquiryType {
+  GENERAL
+  PROJECT
+  CAREER
+  PARTNERSHIP
+}
+
+enum BudgetRange {
+  UNDER_10K
+  UNDER_10K_50K
+  FIFTY_TO_HUNDRED_K
+  OVER_100K
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum ProjectStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
